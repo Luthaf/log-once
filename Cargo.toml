@@ -1,0 +1,13 @@
+[package]
+name = "log-once"
+version = "0.1.0"
+authors = ["Luthaf <luthaf@luthaf.fr>"]
+
+[dependencies]
+log = "0.3"
+lazy_static = "*"
+
+
+[lib]
+test = false
+doctest = false
