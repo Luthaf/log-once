@@ -1,4 +1,14 @@
-//! Helper macros for logging some events only once.
+//! Collection of helper macros for logging some events only once.
+//!
+//! This crate provide macro in the `log_once` family (`warn_once!`,
+//! `trace_once!`, ...); that only send a logging event once for every message.
+//! It rely and uses the logging infrastructure in the [log][log] crate; and
+//! is fully compatible with any logger implementation.
+//!
+//! These macro will store the already seen messages in a `BTreeSet`, and check
+//! if a message is in the set before sending the log event.
+//!
+//! [log]: https://crates.io/crates/log
 //!
 //! # Examples
 //!
