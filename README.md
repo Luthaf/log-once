@@ -1,5 +1,7 @@
 # log-once
 
+[![Build Status](https://travis-ci.org/Luthaf/log-once.svg?branch=master)](https://travis-ci.org/Luthaf/log-once)
+
 Collection of helper macros for logging some events only once.
 
 This crate provide macro in the `log_once` family (`warn_once!`,
