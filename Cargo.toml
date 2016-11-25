@@ -5,9 +5,9 @@ authors = ["Luthaf <luthaf@luthaf.fr>"]
 
 [dependencies]
 log = "0.3"
-lazy_static = "*"
 
+[dev-dependencies]
+lazy_static = "0.2"
 
 [lib]
 test = false
-doctest = false

@@ -2,7 +2,7 @@
 //!
 //! # Examples
 //!
-//! ```rust, no_run
+//! ```rust
 //! #[macro_use]
 //! extern crate log;
 //! #[macro_use]
@@ -12,9 +12,9 @@
 //! # impl Yak { fn shave(&self, _: u32) {} }
 //! # fn find_a_razor() -> Result<u32, u32> { Ok(1) }
 //! pub fn shave_the_yak(yaks: &[Yak]) {
-//!     info!(target: "yak_events", "Commencing yak shaving for {:?}", yak);
-//!
 //!     for yak in yaks {
+//!         info!(target: "yak_events", "Commencing yak shaving for {:?}", yak);
+//!
 //!         loop {
 //!             match find_a_razor() {
 //!                 Ok(razor) => {
@@ -37,10 +37,27 @@
 
 #[macro_use]
 extern crate log;
-#[macro_use]
-extern crate lazy_static;
-
 pub use log::LogLevel;
+
+use std::collections::BTreeSet;
+use std::sync::{Mutex, MutexGuard, PoisonError};
+
+#[doc(hidden)]
+pub struct __MessagesSet {
+    inner: Mutex<BTreeSet<String>>
+}
+
+impl __MessagesSet {
+    pub fn new() -> __MessagesSet {
+        __MessagesSet {
+            inner: Mutex::new(BTreeSet::new())
+        }
+    }
+
+    pub fn lock(&self) -> Result<MutexGuard<BTreeSet<String>>, PoisonError<MutexGuard<BTreeSet<String>>>> {
+        self.inner.lock()
+    }
+}
 
 /// Standard logging macro, logging events once for each arguments.
 ///
@@ -53,12 +70,21 @@ pub use log::LogLevel;
 /// various levels.
 #[macro_export]
 macro_rules! log_once {
-    (target: $target:expr, $lvl:expr, $($arg:tt)+) => ({
-        use ::std::collections::BTreeSet;
-        use ::std::sync::Mutex;
-        lazy_static!{
-            static ref __SEEN_MESSAGES: Mutex<BTreeSet<String>> = Mutex::new(BTreeSet::new());
+    (@CREATE STATIC) => ({
+        use ::std::sync::{Once, ONCE_INIT};
+        static mut __SEEN_MESSAGES: *const $crate::__MessagesSet = 0 as *const _;
+        static ONCE: Once = ONCE_INIT;
+        unsafe {
+            ONCE.call_once(|| {
+                let singleton = $crate::__MessagesSet::new();
+                __SEEN_MESSAGES = ::std::mem::transmute(Box::new(singleton));
+            });
+            &(*__SEEN_MESSAGES)
         }
+    });
+    (target: $target:expr, $lvl:expr, $($arg:tt)+) => ({
+        #[allow(non_snake_case)]
+        let __SEEN_MESSAGES = log_once!(@CREATE STATIC);
         let mut seen_messages = __SEEN_MESSAGES.lock().expect("Mutex was poisonned");
         let message = String::from(stringify!($target)) + stringify!($lvl) + &format!($($arg)+);
         if !seen_messages.contains(&message) {
@@ -66,7 +92,7 @@ macro_rules! log_once {
             log!(target: $target, $lvl, $($arg)+);
         }
     });
-    ($lvl:expr, $($arg:tt)+) => (log_once!(target: module_path!(), $lvl, $($arg)+))
+    ($lvl:expr, $($arg:tt)+) => (log_once!(target: module_path!(), $lvl, $($arg)+));
 }
 
 /// Logs a message once at the error level.
