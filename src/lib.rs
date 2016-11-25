@@ -86,10 +86,11 @@ macro_rules! log_once {
         #[allow(non_snake_case)]
         let __SEEN_MESSAGES = log_once!(@CREATE STATIC);
         let mut seen_messages = __SEEN_MESSAGES.lock().expect("Mutex was poisonned");
-        let message = String::from(stringify!($target)) + stringify!($lvl) + &format!($($arg)+);
+        let formatted = format!($($arg)+);
+        let message = String::from(stringify!($target)) + stringify!($lvl) + &formatted;
         if !seen_messages.contains(&message) {
             seen_messages.insert(message);
-            log!(target: $target, $lvl, $($arg)+);
+            log!(target: $target, $lvl, "{}", formatted);
         }
     });
     ($lvl:expr, $($arg:tt)+) => (log_once!(target: module_path!(), $lvl, $($arg)+));
@@ -194,4 +195,39 @@ macro_rules! trace_once {
     ($($arg:tt)*) => (
         log_once!($crate::LogLevel::Trace, $($arg)*);
     )
+}
+
+#[cfg(test)]
+mod tests {
+    use std::cell::Cell;
+    use std::sync::{Once, ONCE_INIT};
+    use log::{Log, LogRecord, LogMetadata, LogLevelFilter};
+
+    struct SimpleLogger;
+    impl Log for SimpleLogger {
+        fn enabled(&self, _: &LogMetadata) -> bool {true}
+        fn log(&self, record: &LogRecord) {
+            println!("{}", record.args());
+        }
+    }
+
+    #[test]
+    fn called_once() {
+        static START: Once = ONCE_INIT;
+        START.call_once(|| {
+            ::log::set_logger(|max_log_level| {
+                max_log_level.set(LogLevelFilter::Trace);
+                Box::new(SimpleLogger)
+            }).expect("Could not set the logger");
+        });
+
+        let counter = Cell::new(0);
+        let function = || {
+            counter.set(counter.get() + 1);
+            counter.get()
+        };
+
+        info_once!("Counter is: {}", function());
+        assert_eq!(counter.get(), 1);
+    }
 }
