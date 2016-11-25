@@ -1,6 +1,7 @@
 # log-once
 
 [![Build Status](https://travis-ci.org/Luthaf/log-once.svg?branch=master)](https://travis-ci.org/Luthaf/log-once)
+[![Documentation](https://img.shields.io/badge/doc-docs.rs-green.svg)](https://docs.rs/log-once/)
 
 Collection of helper macros for logging some events only once.
 

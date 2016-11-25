@@ -6,6 +6,7 @@ license = "MIT/Apache-2.0"
 readme = "README.md"
 repository = "https://github.com/Luthaf/log-once"
 homepage = "https://github.com/Luthaf/log-once"
+documentation = "https://docs.rs/log-once/"
 description = """
 Collection of helper macros for logging some events only once.
 """
