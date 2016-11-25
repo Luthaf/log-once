@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/Luthaf/log-once.svg?branch=master)](https://travis-ci.org/Luthaf/log-once)
 [![Documentation](https://img.shields.io/badge/doc-docs.rs-green.svg)](https://docs.rs/log-once/)
+[![Crates.io version](https://img.shields.io/crates/v/log-once.svg)](https://crates.io/crates/log-once)
 
 Collection of helper macros for logging some events only once.
 
@@ -14,6 +15,27 @@ These macro will store the already seen messages in a `BTreeSet`, and check
 if a message is in the set before sending the log event.
 
 [log]: https://crates.io/crates/log
+
+## Usage
+
+1) Add it to your `Cargo.toml` file:
+
+```toml
+[dependencies]
+log = "0.3"
+log_once = "0.1"
+```
+
+2) import the macros:
+
+```rust
+#[macro_use]
+extern crate log;
+#[macro_use]
+extern crate log_once;
+```
+
+3) Enjoy!
 
 ## Examples
 
