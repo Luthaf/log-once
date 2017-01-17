@@ -23,7 +23,7 @@ if a message is in the set before sending the log event.
 ```toml
 [dependencies]
 log = "0.3"
-log_once = "0.1"
+log-once = "0.1"
 ```
 
 2) import the macros:
