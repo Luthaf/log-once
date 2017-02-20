@@ -92,18 +92,22 @@ macro_rules! log_once {
             &(*__SEEN_MESSAGES)
         }
     });
-    (target: $target:expr, $lvl:expr, $($arg:tt)+) => ({
+    (target: $target:expr, $lvl:expr, $message:expr) => ({
         #[allow(non_snake_case)]
         let __SEEN_MESSAGES = log_once!(@CREATE STATIC);
         let mut seen_messages = __SEEN_MESSAGES.lock().expect("Mutex was poisonned");
-        let formatted = format!($($arg)+);
-        let message = String::from(stringify!($target)) + stringify!($lvl) + &formatted;
-        if !seen_messages.contains(&message) {
-            seen_messages.insert(message);
-            log!(target: $target, $lvl, "{}", formatted);
+        let event = String::from(stringify!($target)) + stringify!($lvl) + &$message;
+        if !seen_messages.contains(&event) {
+            seen_messages.insert(event);
+            log!(target: $target, $lvl, "{}", $message);
         }
     });
-    ($lvl:expr, $($arg:tt)+) => (log_once!(target: module_path!(), $lvl, $($arg)+));
+    (target: $target:expr, $lvl:expr, $format:expr, $($arg:tt)+) => ({
+        let message = format!($format, $($arg)+);
+        log_once!(target: $target, $lvl, message);
+    });
+    ($lvl:expr, $message:expr) => (log_once!(target: module_path!(), $lvl, $message));
+    ($lvl:expr, $format:expr, $($arg:tt)+) => (log_once!(target: module_path!(), $lvl, $format, $($arg)+));
 }
 
 /// Logs a message once at the error level.

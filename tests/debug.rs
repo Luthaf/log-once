@@ -17,6 +17,7 @@ fn debug() {
 
     for _ in 0..4 {
         debug_once!("This one is only logged once {}", 43);
+        debug_once!("This is only logged once too");
     }
 
     for i in 0..4 {
@@ -30,6 +31,7 @@ Here 42!
 Here 42!
 Here 42!
 This one is only logged once 43
+This is only logged once too
 This will be logged twice 0
 This will be logged twice 1
 ";
