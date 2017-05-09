@@ -105,8 +105,7 @@ macro_rules! log_once {
         let __SEEN_MESSAGES = log_once!(@CREATE STATIC);
         let mut seen_messages = __SEEN_MESSAGES.lock().expect("Mutex was poisonned");
         let event = String::from(stringify!($target)) + stringify!($lvl) + $message.as_ref();
-        if !seen_messages.contains(&event) {
-            seen_messages.insert(event);
+        if seen_messages.insert(event) {
             log!(target: $target, $lvl, "{}", $message);
         }
     });
