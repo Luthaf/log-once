@@ -1,3 +1,10 @@
+#![warn(clippy, clippy_pedantic)]
+#![allow(unknown_lints)]
+#![allow(
+    new_without_default, new_without_default_derive, useless_attribute,
+    missing_docs_in_private_items
+)]
+
 //! Collection of helper macros for logging some events only once.
 //!
 //! This crate provide macro in the `log_once` family (`warn_once!`,
@@ -45,6 +52,7 @@
 //! # fn main() {}
 //! ```
 
+#[allow(unused_imports)]
 #[macro_use]
 extern crate log;
 pub use log::LogLevel;
@@ -96,7 +104,7 @@ macro_rules! log_once {
         #[allow(non_snake_case)]
         let __SEEN_MESSAGES = log_once!(@CREATE STATIC);
         let mut seen_messages = __SEEN_MESSAGES.lock().expect("Mutex was poisonned");
-        let event = String::from(stringify!($target)) + stringify!($lvl) + &$message;
+        let event = String::from(stringify!($target)) + stringify!($lvl) + $message.as_ref();
         if !seen_messages.contains(&event) {
             seen_messages.insert(event);
             log!(target: $target, $lvl, "{}", $message);
