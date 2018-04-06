@@ -1,5 +1,5 @@
-#![warn(clippy, clippy_pedantic)]
 #![allow(unknown_lints)]
+#![warn(clippy, clippy_pedantic)]
 #![allow(
     new_without_default, new_without_default_derive, useless_attribute,
     missing_docs_in_private_items
@@ -12,8 +12,8 @@
 //! It rely and uses the logging infrastructure in the [log][log] crate; and
 //! is fully compatible with any logger implementation.
 //!
-//! These macro will store the already seen messages in a `BTreeSet`, and check
-//! if a message is in the set before sending the log event.
+//! These macro will store the already seen messages in a static `BTreeSet`, and
+//! check if a message is in the set before sending the log event.
 //!
 //! [log]: https://crates.io/crates/log
 //!
@@ -55,7 +55,7 @@
 #[allow(unused_imports)]
 #[macro_use]
 extern crate log;
-pub use log::LogLevel;
+pub use log::Level;
 
 use std::collections::BTreeSet;
 use std::sync::{Mutex, MutexGuard, PoisonError};
@@ -81,7 +81,7 @@ impl __MessagesSet {
 ///
 /// The log event will only be emmited once for each combinaison of target/arguments.
 ///
-/// This macro will generically log with the specified `LogLevel` and `format!`
+/// This macro will generically log with the specified `Level` and `format!`
 /// based argument list.
 ///
 /// The `max_level_*` features can be used to statically disable logging at
@@ -125,10 +125,10 @@ macro_rules! log_once {
 #[macro_export]
 macro_rules! error_once {
     (target: $target:expr, $($arg:tt)*) => (
-        log_once!(target: $target, $crate::LogLevel::Error, $($arg)*);
+        log_once!(target: $target, $crate::Level::Error, $($arg)*);
     );
     ($($arg:tt)*) => (
-        log_once!($crate::LogLevel::Error, $($arg)*);
+        log_once!($crate::Level::Error, $($arg)*);
     )
 }
 
@@ -145,10 +145,10 @@ macro_rules! error_once {
 #[macro_export]
 macro_rules! warn_once {
     (target: $target:expr, $($arg:tt)*) => (
-        log_once!(target: $target, $crate::LogLevel::Warn, $($arg)*);
+        log_once!(target: $target, $crate::Level::Warn, $($arg)*);
     );
     ($($arg:tt)*) => (
-        log_once!($crate::LogLevel::Warn, $($arg)*);
+        log_once!($crate::Level::Warn, $($arg)*);
     )
 }
 
@@ -166,10 +166,10 @@ macro_rules! warn_once {
 #[macro_export]
 macro_rules! info_once {
     (target: $target:expr, $($arg:tt)*) => (
-        log_once!(target: $target, $crate::LogLevel::Info, $($arg)*);
+        log_once!(target: $target, $crate::Level::Info, $($arg)*);
     );
     ($($arg:tt)*) => (
-        log_once!($crate::LogLevel::Info, $($arg)*);
+        log_once!($crate::Level::Info, $($arg)*);
     )
 }
 
@@ -188,10 +188,10 @@ macro_rules! info_once {
 #[macro_export]
 macro_rules! debug_once {
     (target: $target:expr, $($arg:tt)*) => (
-        log_once!(target: $target, $crate::LogLevel::Debug, $($arg)*);
+        log_once!(target: $target, $crate::Level::Debug, $($arg)*);
     );
     ($($arg:tt)*) => (
-        log_once!($crate::LogLevel::Debug, $($arg)*);
+        log_once!($crate::Level::Debug, $($arg)*);
     )
 }
 
@@ -211,10 +211,10 @@ macro_rules! debug_once {
 #[macro_export]
 macro_rules! trace_once {
     (target: $target:expr, $($arg:tt)*) => (
-        log_once!(target: $target, $crate::LogLevel::Trace, $($arg)*);
+        log_once!(target: $target, $crate::Level::Trace, $($arg)*);
     );
     ($($arg:tt)*) => (
-        log_once!($crate::LogLevel::Trace, $($arg)*);
+        log_once!($crate::Level::Trace, $($arg)*);
     )
 }
 
@@ -222,24 +222,23 @@ macro_rules! trace_once {
 mod tests {
     use std::cell::Cell;
     use std::sync::{Once, ONCE_INIT};
-    use log::{Log, LogRecord, LogMetadata, LogLevelFilter};
+    use log::{Log, Record, Metadata, LevelFilter};
 
     struct SimpleLogger;
     impl Log for SimpleLogger {
-        fn enabled(&self, _: &LogMetadata) -> bool {true}
-        fn log(&self, record: &LogRecord) {
-            println!("{}", record.args());
-        }
+        fn enabled(&self, _: &Metadata) -> bool {true}
+        fn log(&self, _: &Record) {}
+        fn flush(&self) {}
     }
+
+    static LOGGER: SimpleLogger = SimpleLogger;
 
     #[test]
     fn called_once() {
         static START: Once = ONCE_INIT;
         START.call_once(|| {
-            ::log::set_logger(|max_log_level| {
-                max_log_level.set(LogLevelFilter::Trace);
-                Box::new(SimpleLogger)
-            }).expect("Could not set the logger");
+            ::log::set_logger(&LOGGER).expect("Could not set the logger");
+            ::log::set_max_level(LevelFilter::Trace);
         });
 
         let counter = Cell::new(0);
