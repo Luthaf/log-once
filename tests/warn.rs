@@ -1,9 +1,5 @@
-#[macro_use]
-extern crate log;
-#[macro_use]
-extern crate log_once;
-#[macro_use]
-extern crate lazy_static;
+use log::warn;
+use log_once::warn_once;
 
 mod logger;
 

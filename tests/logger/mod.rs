@@ -2,7 +2,7 @@ use log::{Record, LevelFilter, Metadata};
 use std::sync::{Mutex, Once, ONCE_INIT};
 use std::fmt::Write;
 
-lazy_static!{
+lazy_static::lazy_static!{
     static ref LOGGED_DATA: Mutex<String> = Mutex::new(String::new());
 }
 

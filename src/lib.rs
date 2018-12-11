@@ -1,9 +1,7 @@
-#![allow(unknown_lints)]
-#![warn(clippy, clippy_pedantic)]
-#![allow(
-    new_without_default, new_without_default_derive, useless_attribute,
-    missing_docs_in_private_items
-)]
+#![warn(clippy::all, clippy::pedantic)]
+#![allow(clippy::new_without_default, clippy::new_without_default_derive)]
+#![allow(clippy::useless_attribute, clippy::missing_docs_in_private_items)]
+#![allow(clippy::use_self)]
 
 //! Collection of helper macros for logging some events only once.
 //!
@@ -52,8 +50,6 @@
 //! # fn main() {}
 //! ```
 
-#[allow(unused_imports)]
-#[macro_use]
 extern crate log;
 pub use log::Level;
 
@@ -102,19 +98,19 @@ macro_rules! log_once {
     });
     (target: $target:expr, $lvl:expr, $message:expr) => ({
         #[allow(non_snake_case)]
-        let __SEEN_MESSAGES = log_once!(@CREATE STATIC);
+        let __SEEN_MESSAGES = $crate::log_once!(@CREATE STATIC);
         let mut seen_messages = __SEEN_MESSAGES.lock().expect("Mutex was poisonned");
         let event = String::from(stringify!($target)) + stringify!($lvl) + $message.as_ref();
         if seen_messages.insert(event) {
-            log!(target: $target, $lvl, "{}", $message);
+            log::log!(target: $target, $lvl, "{}", $message);
         }
     });
     (target: $target:expr, $lvl:expr, $format:expr, $($arg:tt)+) => ({
         let message = format!($format, $($arg)+);
-        log_once!(target: $target, $lvl, message);
+        $crate::log_once!(target: $target, $lvl, message);
     });
-    ($lvl:expr, $message:expr) => (log_once!(target: module_path!(), $lvl, $message));
-    ($lvl:expr, $format:expr, $($arg:tt)+) => (log_once!(target: module_path!(), $lvl, $format, $($arg)+));
+    ($lvl:expr, $message:expr) => ($crate::log_once!(target: module_path!(), $lvl, $message));
+    ($lvl:expr, $format:expr, $($arg:tt)+) => ($crate::log_once!(target: module_path!(), $lvl, $format, $($arg)+));
 }
 
 /// Logs a message once at the error level.
@@ -125,10 +121,10 @@ macro_rules! log_once {
 #[macro_export]
 macro_rules! error_once {
     (target: $target:expr, $($arg:tt)*) => (
-        log_once!(target: $target, $crate::Level::Error, $($arg)*);
+        $crate::log_once!(target: $target, $crate::Level::Error, $($arg)*);
     );
     ($($arg:tt)*) => (
-        log_once!($crate::Level::Error, $($arg)*);
+        $crate::log_once!($crate::Level::Error, $($arg)*);
     )
 }
 
@@ -145,10 +141,10 @@ macro_rules! error_once {
 #[macro_export]
 macro_rules! warn_once {
     (target: $target:expr, $($arg:tt)*) => (
-        log_once!(target: $target, $crate::Level::Warn, $($arg)*);
+        $crate::log_once!(target: $target, $crate::Level::Warn, $($arg)*);
     );
     ($($arg:tt)*) => (
-        log_once!($crate::Level::Warn, $($arg)*);
+        $crate::log_once!($crate::Level::Warn, $($arg)*);
     )
 }
 
@@ -166,10 +162,10 @@ macro_rules! warn_once {
 #[macro_export]
 macro_rules! info_once {
     (target: $target:expr, $($arg:tt)*) => (
-        log_once!(target: $target, $crate::Level::Info, $($arg)*);
+        $crate::log_once!(target: $target, $crate::Level::Info, $($arg)*);
     );
     ($($arg:tt)*) => (
-        log_once!($crate::Level::Info, $($arg)*);
+        $crate::log_once!($crate::Level::Info, $($arg)*);
     )
 }
 
@@ -188,10 +184,10 @@ macro_rules! info_once {
 #[macro_export]
 macro_rules! debug_once {
     (target: $target:expr, $($arg:tt)*) => (
-        log_once!(target: $target, $crate::Level::Debug, $($arg)*);
+        $crate::log_once!(target: $target, $crate::Level::Debug, $($arg)*);
     );
     ($($arg:tt)*) => (
-        log_once!($crate::Level::Debug, $($arg)*);
+        $crate::log_once!($crate::Level::Debug, $($arg)*);
     )
 }
 
@@ -211,10 +207,10 @@ macro_rules! debug_once {
 #[macro_export]
 macro_rules! trace_once {
     (target: $target:expr, $($arg:tt)*) => (
-        log_once!(target: $target, $crate::Level::Trace, $($arg)*);
+        $crate::log_once!(target: $target, $crate::Level::Trace, $($arg)*);
     );
     ($($arg:tt)*) => (
-        log_once!($crate::Level::Trace, $($arg)*);
+        $crate::log_once!($crate::Level::Trace, $($arg)*);
     )
 }
 
