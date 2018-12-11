@@ -18,10 +18,8 @@
 //! # Examples
 //!
 //! ```rust
-//! #[macro_use]
-//! extern crate log;
-//! #[macro_use]
-//! extern crate log_once;
+//! use log::info;
+//! use log_once::{info_once, warn_once};
 //!
 //! # #[derive(Debug)] pub struct Yak(String);
 //! # impl Yak { fn shave(&self, _: u32) {} }

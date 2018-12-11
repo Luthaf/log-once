@@ -22,17 +22,13 @@ if a message is in the set before sending the log event.
 
 ```toml
 [dependencies]
-log = "0.4"
-log-once = "0.2"
+log-once = "0.3"
 ```
 
 2) import the macros:
 
 ```rust
-#[macro_use]
-extern crate log;
-#[macro_use]
-extern crate log_once;
+use log_once::{warn_once, log_once};
 ```
 
 3) Enjoy!
@@ -40,10 +36,8 @@ extern crate log_once;
 ## Examples
 
 ```rust
-#[macro_use]
-extern crate log;
-#[macro_use]
-extern crate log_once;
+use log::info;
+use log_once::{info_once, warn_once};
 
 pub fn shave_the_yak(yaks: &[Yak]) {
     for yak in yaks {
