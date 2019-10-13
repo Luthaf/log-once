@@ -1,5 +1,5 @@
 #![warn(clippy::all, clippy::pedantic)]
-#![allow(clippy::new_without_default, clippy::new_without_default_derive)]
+#![allow(clippy::new_without_default, clippy::new_without_default)]
 #![allow(clippy::useless_attribute, clippy::missing_docs_in_private_items)]
 #![allow(clippy::use_self)]
 
@@ -83,9 +83,9 @@ impl __MessagesSet {
 #[macro_export]
 macro_rules! log_once {
     (@CREATE STATIC) => ({
-        use ::std::sync::{Once, ONCE_INIT};
+        use ::std::sync::Once;
         static mut __SEEN_MESSAGES: *const $crate::__MessagesSet = 0 as *const _;
-        static ONCE: Once = ONCE_INIT;
+        static ONCE: Once = Once::new();
         unsafe {
             ONCE.call_once(|| {
                 let singleton = $crate::__MessagesSet::new();
@@ -215,7 +215,7 @@ macro_rules! trace_once {
 #[cfg(test)]
 mod tests {
     use std::cell::Cell;
-    use std::sync::{Once, ONCE_INIT};
+    use std::sync::Once;
     use log::{Log, Record, Metadata, LevelFilter};
 
     struct SimpleLogger;
@@ -229,7 +229,7 @@ mod tests {
 
     #[test]
     fn called_once() {
-        static START: Once = ONCE_INIT;
+        static START: Once = Once::new();
         START.call_once(|| {
             ::log::set_logger(&LOGGER).expect("Could not set the logger");
             ::log::set_max_level(LevelFilter::Trace);

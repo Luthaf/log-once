@@ -1,5 +1,5 @@
 use log::{Record, LevelFilter, Metadata};
-use std::sync::{Mutex, Once, ONCE_INIT};
+use std::sync::{Mutex, Once};
 use std::fmt::Write;
 
 lazy_static::lazy_static!{
@@ -25,7 +25,7 @@ impl ::log::Log for MemoryLogger {
 static LOGGER: MemoryLogger = MemoryLogger;
 
 pub fn init() {
-    static START: Once = ONCE_INIT;
+    static START: Once = Once::new();
     START.call_once(|| {
         ::log::set_logger(&LOGGER).expect("Could not set the logger");
         ::log::set_max_level(LevelFilter::Trace);
