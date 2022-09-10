@@ -26,19 +26,19 @@
 //! # fn find_a_razor() -> Result<u32, u32> { Ok(1) }
 //! pub fn shave_the_yak(yaks: &[Yak]) {
 //!     for yak in yaks {
-//!         info!(target: "yak_events", "Commencing yak shaving for {:?}", yak);
+//!         info!(target: "yak_events", "Commencing yak shaving for {yak:?}");
 //!
 //!         loop {
 //!             match find_a_razor() {
 //!                 Ok(razor) => {
 //!                     // This will only appear once in the logger output for each razor
-//!                     info_once!("Razor located: {}", razor);
+//!                     info_once!("Razor located: {razor}");
 //!                     yak.shave(razor);
 //!                     break;
 //!                 }
 //!                 Err(err) => {
 //!                     // This will only appear once in the logger output for each error
-//!                     warn_once!("Unable to locate a razor: {}, retrying", err);
+//!                     warn_once!("Unable to locate a razor: {err}, retrying");
 //!                 }
 //!             }
 //!         }
@@ -96,21 +96,17 @@ macro_rules! log_once {
             &(*__SEEN_MESSAGES)
         }
     });
-    (target: $target:expr, $lvl:expr, $message:expr) => ({
+    (target: $target:expr, $lvl:expr, $($arg:tt)+) => ({
+        let message = format!($($arg)+);
         #[allow(non_snake_case)]
         let __SEEN_MESSAGES = $crate::log_once!(@CREATE STATIC);
         let mut seen_messages = __SEEN_MESSAGES.lock().expect("Mutex was poisonned");
-        let event = String::from(stringify!($target)) + stringify!($lvl) + $message.as_ref();
+        let event = String::from(stringify!($target)) + stringify!($lvl) + message.as_ref();
         if seen_messages.insert(event) {
-            log::log!(target: $target, $lvl, "{}", $message);
+            log::log!(target: $target, $lvl, "{}", message);
         }
     });
-    (target: $target:expr, $lvl:expr, $format:expr, $($arg:tt)+) => ({
-        let message = format!($format, $($arg)+);
-        $crate::log_once!(target: $target, $lvl, message);
-    });
-    ($lvl:expr, $message:expr) => ($crate::log_once!(target: module_path!(), $lvl, $message));
-    ($lvl:expr, $format:expr, $($arg:tt)+) => ($crate::log_once!(target: module_path!(), $lvl, $format, $($arg)+));
+    ($lvl:expr, $($arg:tt)+) => ($crate::log_once!(target: module_path!(), $lvl,  $($arg)+));
 }
 
 /// Logs a message once at the error level.
