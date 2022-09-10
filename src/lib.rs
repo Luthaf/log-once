@@ -48,7 +48,11 @@
 //! # fn main() {}
 //! ```
 
-extern crate log;
+// We re-export the log crate so that the log_once macros can use it directly.
+// That way users don't need to depend on `log` explicitly.
+// This is especially nice for people who use `tracing` for logging, but still use `log_once`.
+pub use log;
+
 pub use log::Level;
 
 use std::collections::BTreeSet;
@@ -105,7 +109,7 @@ macro_rules! log_once {
         let mut seen_messages = __SEEN_MESSAGES.lock().expect("Mutex was poisonned");
         let event = String::from(stringify!($target)) + stringify!($lvl) + message.as_ref();
         if seen_messages.insert(event) {
-            log::log!(target: $target, $lvl, "{}", message);
+            $crate::log::log!(target: $target, $lvl, "{}", message);
         }
     });
 
@@ -235,8 +239,8 @@ mod tests {
     fn called_once() {
         static START: Once = Once::new();
         START.call_once(|| {
-            ::log::set_logger(&LOGGER).expect("Could not set the logger");
-            ::log::set_max_level(LevelFilter::Trace);
+            log::set_logger(&LOGGER).expect("Could not set the logger");
+            log::set_max_level(LevelFilter::Trace);
         });
 
         let counter = Cell::new(0);
