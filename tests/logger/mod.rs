@@ -2,6 +2,7 @@ use log::{LevelFilter, Metadata, Record};
 use std::fmt::Write;
 use std::sync::{Mutex, Once};
 
+
 lazy_static::lazy_static! {
     static ref LOGGED_DATA: Mutex<String> = Mutex::new(String::new());
 }
@@ -15,7 +16,7 @@ impl ::log::Log for MemoryLogger {
     }
 
     fn log(&self, record: &Record) {
-        let mut buffer = LOGGED_DATA.lock().expect("Mutex has been poisonned");
+        let mut buffer = LOGGED_DATA.lock().expect("Mutex has been poisoned");
         writeln!(*buffer, "{}", record.args()).expect("Error while writing");
     }
 
@@ -35,6 +36,6 @@ pub fn init() {
 pub fn logged_data() -> String {
     LOGGED_DATA
         .lock()
-        .expect("Mutex has been poisonned")
+        .expect("Mutex has been poisoned")
         .clone()
 }

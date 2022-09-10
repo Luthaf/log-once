@@ -82,7 +82,7 @@ impl __MessagesSet {
 
 /// Standard logging macro, logging events once for each arguments.
 ///
-/// The log event will only be emmited once for each combinaison of target/arguments.
+/// The log event will only be emitted once for each combinaison of target/arguments.
 ///
 /// This macro will generically log with the specified `Level` and `format!`
 /// based argument list.
@@ -122,7 +122,7 @@ macro_rules! log_once {
 
 /// Logs a message once at the error level.
 ///
-/// The log event will only be emmited once for each combinaison of target/arguments.
+/// The log event will only be emitted once for each combinaison of target/arguments.
 ///
 /// Logging at this level is disabled if the `max_level_off` feature is present.
 #[macro_export]
@@ -137,7 +137,7 @@ macro_rules! error_once {
 
 /// Logs a message once at the warn level.
 ///
-/// The log event will only be emmited once for each combinaison of target/arguments.
+/// The log event will only be emitted once for each combinaison of target/arguments.
 ///
 /// Logging at this level is disabled if any of the following features are
 /// present: `max_level_off` or `max_level_error`.
@@ -157,7 +157,7 @@ macro_rules! warn_once {
 
 /// Logs a message once at the info level.
 ///
-/// The log event will only be emmited once for each combinaison of target/arguments.
+/// The log event will only be emitted once for each combinaison of target/arguments.
 ///
 /// Logging at this level is disabled if any of the following features are
 /// present: `max_level_off`, `max_level_error`, or `max_level_warn`.
@@ -178,7 +178,7 @@ macro_rules! info_once {
 
 /// Logs a message once at the debug level.
 ///
-/// The log event will only be emmited once for each combinaison of target/arguments.
+/// The log event will only be emitted once for each combinaison of target/arguments.
 ///
 /// Logging at this level is disabled if any of the following features are
 /// present: `max_level_off`, `max_level_error`, `max_level_warn`, or
@@ -200,7 +200,7 @@ macro_rules! debug_once {
 
 /// Logs a message once at the trace level.
 ///
-/// The log event will only be emmited once for each combinaison of target/arguments.
+/// The log event will only be emitted once for each combinaison of target/arguments.
 ///
 /// Logging at this level is disabled if any of the following features are
 /// present: `max_level_off`, `max_level_error`, `max_level_warn`,
