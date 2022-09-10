@@ -21,8 +21,8 @@ fn debug() {
     }
 
     let data = logger::logged_data();
-    let expected =
-"Here 42!
+    let expected = "\
+Here 42!
 Here 42!
 Here 42!
 Here 42!

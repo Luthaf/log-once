@@ -56,17 +56,19 @@ use std::sync::{Mutex, MutexGuard, PoisonError};
 
 #[doc(hidden)]
 pub struct __MessagesSet {
-    inner: Mutex<BTreeSet<String>>
+    inner: Mutex<BTreeSet<String>>,
 }
 
 impl __MessagesSet {
     pub fn new() -> __MessagesSet {
         __MessagesSet {
-            inner: Mutex::new(BTreeSet::new())
+            inner: Mutex::new(BTreeSet::new()),
         }
     }
 
-    pub fn lock(&self) -> Result<MutexGuard<BTreeSet<String>>, PoisonError<MutexGuard<BTreeSet<String>>>> {
+    pub fn lock(
+        &self,
+    ) -> Result<MutexGuard<BTreeSet<String>>, PoisonError<MutexGuard<BTreeSet<String>>>> {
         self.inner.lock()
     }
 }
@@ -214,13 +216,15 @@ macro_rules! trace_once {
 
 #[cfg(test)]
 mod tests {
+    use log::{LevelFilter, Log, Metadata, Record};
     use std::cell::Cell;
     use std::sync::Once;
-    use log::{Log, Record, Metadata, LevelFilter};
 
     struct SimpleLogger;
     impl Log for SimpleLogger {
-        fn enabled(&self, _: &Metadata) -> bool {true}
+        fn enabled(&self, _: &Metadata) -> bool {
+            true
+        }
         fn log(&self, _: &Record) {}
         fn flush(&self) {}
     }
