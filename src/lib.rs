@@ -64,12 +64,15 @@ pub struct __MessagesSet {
 }
 
 impl __MessagesSet {
-    pub fn new() -> __MessagesSet {
-        __MessagesSet {
+    #[must_use]
+    pub fn new() -> Self {
+        Self {
             inner: Mutex::new(BTreeSet::new()),
         }
     }
 
+    /// # Errors
+    /// Mutex poisoning.
     pub fn lock(
         &self,
     ) -> Result<MutexGuard<BTreeSet<String>>, PoisonError<MutexGuard<BTreeSet<String>>>> {
