@@ -1,8 +1,8 @@
-use log::{Record, LevelFilter, Metadata};
-use std::sync::{Mutex, Once};
+use log::{LevelFilter, Metadata, Record};
 use std::fmt::Write;
+use std::sync::{Mutex, Once};
 
-lazy_static::lazy_static!{
+lazy_static::lazy_static! {
     static ref LOGGED_DATA: Mutex<String> = Mutex::new(String::new());
 }
 
@@ -33,5 +33,8 @@ pub fn init() {
 }
 
 pub fn logged_data() -> String {
-    LOGGED_DATA.lock().expect("Mutex has been poisonned").clone()
+    LOGGED_DATA
+        .lock()
+        .expect("Mutex has been poisonned")
+        .clone()
 }

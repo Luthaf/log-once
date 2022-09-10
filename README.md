@@ -41,19 +41,19 @@ use log_once::{info_once, warn_once};
 
 pub fn shave_the_yak(yaks: &[Yak]) {
     for yak in yaks {
-        info!(target: "yak_events", "Commencing yak shaving for {:?}", yak);
+        info!(target: "yak_events", "Commencing yak shaving for {yak:?}");
 
         loop {
             match find_a_razor() {
                 Ok(razor) => {
                     // This will only appear once in the logger output for each razor
-                    info_once!("Razor located: {}", razor);
+                    info_once!("Razor located: {razor}");
                     yak.shave(razor);
                     break;
                 }
                 Err(err) => {
                     // This will only appear once in the logger output for each error
-                    warn_once!("Unable to locate a razor: {}, retrying", err);
+                    warn_once!("Unable to locate a razor: {err}, retrying");
                 }
             }
         }
