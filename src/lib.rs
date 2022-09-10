@@ -96,6 +96,8 @@ macro_rules! log_once {
             &(*__SEEN_MESSAGES)
         }
     });
+
+    // log_once!(target: "my_target", Level::Info, "Some {}", "logging")
     (target: $target:expr, $lvl:expr, $($arg:tt)+) => ({
         let message = format!($($arg)+);
         #[allow(non_snake_case)]
@@ -106,6 +108,8 @@ macro_rules! log_once {
             log::log!(target: $target, $lvl, "{}", message);
         }
     });
+
+    // log_once!(Level::Info, "Some {}", "logging")
     ($lvl:expr, $($arg:tt)+) => ($crate::log_once!(target: module_path!(), $lvl,  $($arg)+));
 }
 
