@@ -59,11 +59,11 @@ use std::collections::BTreeSet;
 use std::sync::{Mutex, MutexGuard, PoisonError};
 
 #[doc(hidden)]
-pub struct __MessagesSet {
+pub struct MessagesSet {
     inner: Mutex<BTreeSet<String>>,
 }
 
-impl __MessagesSet {
+impl MessagesSet {
     #[must_use]
     pub fn new() -> Self {
         Self {
@@ -93,14 +93,14 @@ impl __MessagesSet {
 macro_rules! log_once {
     (@CREATE STATIC) => ({
         use ::std::sync::Once;
-        static mut __SEEN_MESSAGES: *const $crate::__MessagesSet = 0 as *const _;
+        static mut SEEN_MESSAGES: *const $crate::MessagesSet = 0 as *const _;
         static ONCE: Once = Once::new();
         unsafe {
             ONCE.call_once(|| {
-                let singleton = $crate::__MessagesSet::new();
-                __SEEN_MESSAGES = ::std::mem::transmute(Box::new(singleton));
+                let singleton = $crate::MessagesSet::new();
+                SEEN_MESSAGES = ::std::mem::transmute(Box::new(singleton));
             });
-            &(*__SEEN_MESSAGES)
+            &(*SEEN_MESSAGES)
         }
     });
 
