@@ -107,11 +107,10 @@ macro_rules! log_once {
     // log_once!(target: "my_target", Level::Info, "Some {}", "logging")
     (target: $target:expr, $lvl:expr, $($arg:tt)+) => ({
         let message = format!($($arg)+);
-        #[allow(non_snake_case)]
-        let __SEEN_MESSAGES = $crate::log_once!(@CREATE STATIC);
-        let mut seen_messages = __SEEN_MESSAGES.lock().expect("Mutex was poisonned");
+        let seen_messages_mutex = $crate::log_once!(@CREATE STATIC);
+        let mut seen_messages_lock = seen_messages_mutex.lock().expect("Mutex was poisonned");
         let event = String::from(stringify!($target)) + stringify!($lvl) + message.as_ref();
-        if seen_messages.insert(event) {
+        if seen_messages_lock.insert(event) {
             $crate::log::log!(target: $target, $lvl, "{}", message);
         }
     });
