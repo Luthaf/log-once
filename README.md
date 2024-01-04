@@ -1,6 +1,6 @@
 # log-once
 
-[![Build Status](https://travis-ci.org/Luthaf/log-once.svg?branch=master)](https://travis-ci.org/Luthaf/log-once)
+[![Tests](https://github.com/Luthaf/log-once/actions/workflows/tests.yml/badge.svg?event=push)](https://github.com/Luthaf/log-once/actions/workflows/tests.yml)
 [![Documentation](https://img.shields.io/badge/doc-docs.rs-green.svg)](https://docs.rs/log-once/)
 [![Crates.io version](https://img.shields.io/crates/v/log-once.svg)](https://crates.io/crates/log-once)
 
@@ -22,7 +22,7 @@ if a message is in the set before sending the log event.
 
 ```toml
 [dependencies]
-log-once = "0.3"
+log-once = "0.4"
 ```
 
 2) import the macros:
