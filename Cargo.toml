@@ -1,7 +1,9 @@
 [package]
 name = "log-once"
 version = "0.4.0"
-edition = "2018"
+edition = "2021"
+rust-version = "1.65"
+
 authors = ["Luthaf <luthaf@luthaf.fr>"]
 license = "MIT/Apache-2.0"
 readme = "README.md"
