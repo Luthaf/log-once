@@ -8,15 +8,15 @@ on:
 
 jobs:
   tests:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     name: rust ${{ matrix.rust-version }}
     strategy:
       matrix:
         include:
           - rust-version: stable
-          - rust-version: 1.65
+          - rust-version: 1.68
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
 
       - name: setup rust
         uses: dtolnay/rust-toolchain@master
