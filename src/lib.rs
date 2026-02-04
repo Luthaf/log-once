@@ -1,7 +1,7 @@
 #![warn(clippy::all, clippy::pedantic)]
-#![allow(clippy::new_without_default, clippy::new_without_default)]
+
 #![allow(clippy::useless_attribute, clippy::missing_docs_in_private_items)]
-#![allow(clippy::use_self)]
+#![allow(clippy::use_self, clippy::new_without_default)]
 
 //! Collection of helper macros for logging some events only once.
 //!
@@ -74,8 +74,8 @@ impl MessagesSet {
     /// # Errors
     /// Mutex poisoning.
     pub fn lock(
-        &self,
-    ) -> Result<MutexGuard<BTreeSet<String>>, PoisonError<MutexGuard<BTreeSet<String>>>> {
+        &'_ self,
+    ) -> Result<MutexGuard<'_, BTreeSet<String>>, PoisonError<MutexGuard<'_, BTreeSet<String>>>> {
         self.inner.lock()
     }
 }
@@ -93,12 +93,12 @@ impl MessagesSet {
 macro_rules! log_once {
     (@CREATE STATIC) => ({
         use ::std::sync::Once;
-        static mut SEEN_MESSAGES: *const $crate::MessagesSet = 0 as *const _;
+        static mut SEEN_MESSAGES: *const $crate::MessagesSet = std::ptr::null();
         static ONCE: Once = Once::new();
         unsafe {
             ONCE.call_once(|| {
                 let singleton = $crate::MessagesSet::new();
-                SEEN_MESSAGES = ::std::mem::transmute(Box::new(singleton));
+                SEEN_MESSAGES = Box::into_raw(Box::new(singleton));
             });
             &(*SEEN_MESSAGES)
         }
